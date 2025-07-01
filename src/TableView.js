@@ -42,14 +42,24 @@ export class TableView {
             ${this.renderTable()}
           </div>
         </div>
-        <div class="table-footer">
-          ${this.renderFooter()}
-        </div>
+      </div>
+      <div class="table-footer" id="tableFooter">
+        ${this.renderFooter()}
       </div>
     `
     
     this.setupEventListeners()
     console.log('✅ Table View renderizada')
+  }
+
+  /**
+   * Remove o footer quando a tabela for destruída
+   */
+  destroy() {
+    const footer = document.getElementById('tableFooter')
+    if (footer) {
+      footer.remove()
+    }
   }
 
   /**

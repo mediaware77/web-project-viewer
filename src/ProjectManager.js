@@ -167,11 +167,9 @@ export class ProjectManager {
       console.log('Renderizando view do projeto...')
       this.renderProjectView()
       
-      // Mostra warnings após renderizar a view
-      if (projectData.processingInfo?.warnings?.length > 0) {
-        console.log('Mostrando warnings...')
-        this.showProcessingWarnings(projectData.processingInfo.warnings)
-      }
+      // Sempre mostra informações de processamento (warnings + performance)
+      console.log('Mostrando informações de processamento...')
+      this.showProcessingWarnings(projectData.processingInfo?.warnings || [])
     } catch (error) {
       console.error('Erro ao processar arquivo:', error)
       
@@ -323,9 +321,6 @@ export class ProjectManager {
 
     // Renderiza a visualização inicial
     this.renderCurrentView()
-    
-    // Sempre mostra informações de performance após renderizar
-    this.showPerformanceInfo()
   }
 
   /**
@@ -406,78 +401,68 @@ export class ProjectManager {
   }
 
   /**
-   * Mostra warnings de processamento
+   * Mostra warnings de processamento e informações de performance
    */
   showProcessingWarnings(warnings) {
-    if (!warnings || warnings.length === 0) return
-
     const viewContainer = document.getElementById('viewContainer')
     if (!viewContainer || !viewContainer.parentNode) {
       console.warn('Container de visualização não encontrado para mostrar warnings')
       return
     }
 
-    const warningsList = warnings.map(warning => 
-      `<li><strong>${warning.code}:</strong> ${warning.message}</li>`
-    ).join('')
+    // Gera informações de performance
+    const taskCount = this.projectData.tasks.length
+    const isVirtualized = taskCount >= Config.virtualization.threshold
+    const batchEnabled = taskCount > Config.performance.batchSize
+    
+    const performanceInfo = `
+      <div class="performance-section">
+        <h4>💡 Melhorias de Performance Ativas:</h4>
+        <ul class="performance-list">
+          <li>📊 ${taskCount} tarefas processadas</li>
+          <li>${isVirtualized ? '🚀 Virtualização: ATIVA (renderização inteligente)' : '⚡ Renderização: Padrão'}</li>
+          <li>${batchEnabled ? '📦 Processamento em lotes: ATIVO' : '🔄 Processamento: Direto'}</li>
+          <li>⚙️ Configurações centralizadas: ATIVAS</li>
+        </ul>
+      </div>
+    `
 
+    // Gera lista de warnings se existirem
+    const warningsList = warnings && warnings.length > 0 
+      ? warnings.map(warning => `<li><strong>${warning.code}:</strong> ${warning.message}</li>`).join('')
+      : ''
+    
+    const warningsSection = warnings && warnings.length > 0 
+      ? `<div class="warnings-section">
+           <h4>⚠️ Avisos de Processamento:</h4>
+           <ul class="warning-list">${warningsList}</ul>
+         </div>`
+      : ''
+
+    const totalItems = (warnings?.length || 0) + 1 // +1 para performance info
+    
     const warningDiv = document.createElement('div')
     warningDiv.className = 'processing-warnings'
     warningDiv.innerHTML = `
       <div class="warning-header">
         <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/>
-          <line x1="12" y1="17" x2="12.01" y2="17"/>
+          <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        <span>Avisos de processamento (${warnings.length})</span>
+        <span>Informações de Processamento (${totalItems} ${totalItems === 1 ? 'item' : 'itens'})</span>
         <button class="toggle-warnings" onclick="this.parentElement.parentElement.classList.toggle('expanded')">
           Ver detalhes
         </button>
       </div>
-      <ul class="warning-list">
-        ${warningsList}
-      </ul>
+      <div class="warning-content">
+        ${performanceInfo}
+        ${warningsSection}
+      </div>
     `
 
     // Insere antes do container de visualização
     viewContainer.parentNode.insertBefore(warningDiv, viewContainer)
   }
 
-  /**
-   * Mostra informações de performance e otimizações ativas
-   */
-  showPerformanceInfo() {
-    const viewContainer = document.getElementById('viewContainer')
-    if (!viewContainer || !viewContainer.parentNode) {
-      console.warn('Container de visualização não encontrado para mostrar info de performance')
-      return
-    }
-    
-    const taskCount = this.projectData.tasks.length
-    const isVirtualized = taskCount >= Config.virtualization.threshold
-    const batchEnabled = taskCount > Config.performance.batchSize
-    
-    const performanceDiv = document.createElement('div')
-    performanceDiv.className = 'performance-info'
-    performanceDiv.innerHTML = `
-      <strong>💡 Melhorias de Performance Ativas:</strong><br>
-      📊 ${taskCount} tarefas processadas<br>
-      ${isVirtualized ? '🚀 Virtualização: ATIVA (renderização inteligente)' : '⚡ Renderização: Padrão'}<br>
-      ${batchEnabled ? '📦 Processamento em lotes: ATIVO' : '🔄 Processamento: Direto'}<br>
-      ⚙️ Configurações centralizadas: ATIVAS
-    `
-    
-    viewContainer.parentNode.insertBefore(performanceDiv, viewContainer)
-    
-    // Log no console para debug
-    console.log('🎯 Melhorias aplicadas:', {
-      tasks: taskCount,
-      virtualization: isVirtualized,
-      batching: batchEnabled,
-      threshold: Config.virtualization.threshold
-    })
-  }
 
   /**
    * Alterna para uma visualização específica
@@ -505,6 +490,11 @@ export class ProjectManager {
       return
     }
 
+    // Limpa a visualização anterior
+    if (this.tableView && this.tableView.destroy) {
+      this.tableView.destroy()
+    }
+    
     // Limpa o container
     viewContainer.innerHTML = ''
     
