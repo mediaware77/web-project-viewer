@@ -697,3 +697,397 @@ body {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
+
+/* View Toggle */
+.view-toggle {
+  display: flex;
+  background: white;
+  border: 1px solid #d1d1d1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.btn.toggle {
+  border: none;
+  border-radius: 0;
+  border-right: 1px solid #d1d1d1;
+  background: #f8f9fa;
+  color: #605e5c;
+  transition: all 0.2s ease;
+}
+
+.btn.toggle:last-child {
+  border-right: none;
+}
+
+.btn.toggle:hover {
+  background: #e3e3e3;
+}
+
+.btn.toggle.active {
+  background: #0078d4;
+  color: white;
+}
+
+.btn.toggle.active:hover {
+  background: #106ebe;
+}
+
+/* View Container */
+.view-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  height: 100%;
+  align-items: stretch;
+}
+
+/* Table View Styles */
+.table-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+}
+
+.table-toolbar {
+  padding: 16px 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.toolbar-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.search-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d1d1;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #0078d4;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.1);
+}
+
+.filter-section {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-select {
+  padding: 6px 10px;
+  border: 1px solid #d1d1d1;
+  border-radius: 4px;
+  font-size: 13px;
+  background: white;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #0078d4;
+}
+
+.action-section {
+  display: flex;
+  gap: 8px;
+}
+
+.btn.secondary {
+  background: #f3f2f1;
+  border-color: #d1d1d1;
+  color: #323130;
+}
+
+.btn.secondary:hover {
+  background: #e1e1e1;
+}
+
+.table-container {
+  flex: 1;
+  overflow: auto;
+  border: 1px solid #e1e1e1;
+  margin: 0 24px;
+  border-radius: 4px;
+}
+
+.table-wrapper {
+  min-width: 100%;
+  overflow-x: auto;
+}
+
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: white;
+}
+
+.project-table thead {
+  background: #f8f9fa;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.table-header {
+  padding: 12px 8px;
+  text-align: left;
+  font-weight: 600;
+  color: #323130;
+  border-bottom: 2px solid #e1e1e1;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.table-header.sortable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.table-header.sortable:hover {
+  background: #e3e3e3;
+}
+
+.sort-icon {
+  margin-left: 4px;
+  color: #605e5c;
+  font-size: 12px;
+}
+
+.table-row {
+  border-bottom: 1px solid #f3f2f1;
+  transition: background-color 0.2s ease;
+}
+
+.table-row:hover {
+  background: #f8f9fa;
+}
+
+.table-row td {
+  padding: 8px;
+  vertical-align: middle;
+  border-right: 1px solid #f3f2f1;
+}
+
+.table-row td:last-child {
+  border-right: none;
+}
+
+.task-number {
+  font-weight: 600;
+  color: #0078d4;
+  text-align: center;
+  width: 50px;
+}
+
+.hierarchy-level {
+  font-family: 'Courier New', monospace;
+  color: #605e5c;
+  text-align: center;
+  width: 80px;
+}
+
+.task-name {
+  min-width: 200px;
+  max-width: 300px;
+}
+
+.task-name-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.level-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.level-indicator.level-1 {
+  background: #0078d4;
+}
+
+.level-indicator.level-2 {
+  background: #107c10;
+}
+
+.level-indicator.level-3 {
+  background: #ff8c00;
+}
+
+.level-indicator.level-4 {
+  background: #d13438;
+}
+
+.assigned-to {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.duration {
+  text-align: center;
+  width: 80px;
+}
+
+.start-date,
+.end-date {
+  text-align: center;
+  width: 90px;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.dependencies {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.progress {
+  width: 120px;
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 6px;
+  background: #f3f2f1;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #107c10, #16b316);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #605e5c;
+  min-width: 30px;
+  text-align: right;
+}
+
+.bucket {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #605e5c;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px;
+  color: #605e5c;
+  font-style: italic;
+}
+
+.table-footer {
+  padding: 12px 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e1e1e1;
+}
+
+.table-stats {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-size: 12px;
+  color: #605e5c;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-item strong {
+  color: #323130;
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .toolbar-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .filter-section {
+    justify-content: center;
+  }
+  
+  .action-section {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    margin: 0 12px;
+  }
+  
+  .table-toolbar {
+    padding: 12px 16px;
+  }
+  
+  .table-footer {
+    padding: 8px 16px;
+  }
+  
+  .table-stats {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .project-table {
+    font-size: 12px;
+  }
+  
+  .table-header {
+    padding: 8px 6px;
+  }
+  
+  .table-row td {
+    padding: 6px;
+  }
+}

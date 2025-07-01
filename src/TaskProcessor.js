@@ -228,6 +228,11 @@ export class TaskProcessor {
         /^percent complete$/i,
         /^% complete$/i,
         /^progresso$/i
+      ],
+      bucket: [
+        /^bucket$/i,
+        /^categoria$/i,
+        /^category$/i
       ]
     }
     
@@ -298,6 +303,7 @@ export class TaskProcessor {
       endDate: endDate,
       dependsOn: row[columnMap.dependsOn]?.toString() || '',
       percentComplete: this.parsePercentage(row[columnMap.percentComplete]?.toString()),
+      bucket: row[columnMap.bucket]?.toString()?.trim() || '',
       dependencies: [],
       dependents: [],
       rowNumber: rowNumber

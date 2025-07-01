@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx'
 import { GanttChart } from './GanttChart.js'
+import { TableView } from './TableView.js'
 import { TaskProcessor } from './TaskProcessor.js'
 import { Config } from './Config.js'
 
@@ -11,8 +12,10 @@ export class ProjectManager {
   constructor(container) {
     this.container = container
     this.ganttChart = null
+    this.tableView = null
     this.taskProcessor = new TaskProcessor()
     this.projectData = null
+    this.currentView = 'gantt' // 'gantt' ou 'table'
   }
 
   /**
@@ -254,6 +257,27 @@ export class ProjectManager {
             </p>
           </div>
           <div class="toolbar-actions">
+            <div class="view-toggle">
+              <button class="btn toggle ${this.currentView === 'gantt' ? 'active' : ''}" id="ganttViewBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="2"/>
+                  <rect x="3" y="8" width="12" height="2"/>
+                  <rect x="3" y="12" width="15" height="2"/>
+                  <rect x="3" y="16" width="9" height="2"/>
+                </svg>
+                Gantt
+              </button>
+              <button class="btn toggle ${this.currentView === 'table' ? 'active' : ''}" id="tableViewBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="9" y1="9" x2="15" y2="9"/>
+                  <line x1="9" y1="15" x2="15" y2="15"/>
+                  <line x1="3" y1="9" x2="21" y2="9"/>
+                  <line x1="9" y1="21" x2="9" y2="3"/>
+                </svg>
+                Tabela
+              </button>
+            </div>
             <button class="btn" id="newFileBtn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -272,8 +296,8 @@ export class ProjectManager {
           </div>
         </div>
         
-        <div class="gantt-container" id="ganttContainer">
-          <!-- O Gantt Chart será renderizado aqui -->
+        <div class="view-container" id="viewContainer">
+          <!-- A visualização será renderizada aqui -->
         </div>
       </div>
     `
@@ -288,21 +312,30 @@ export class ProjectManager {
       this.exportProject()
     })
 
-    // Inicializa o Gantt Chart
-    const ganttContainer = document.getElementById('ganttContainer')
-    this.ganttChart = new GanttChart(ganttContainer, this.projectData)
-    this.ganttChart.render()
+    // Event listeners para toggle de visualização
+    document.getElementById('ganttViewBtn').addEventListener('click', () => {
+      this.switchToView('gantt')
+    })
+
+    document.getElementById('tableViewBtn').addEventListener('click', () => {
+      this.switchToView('table')
+    })
+
+    // Renderiza a visualização inicial
+    this.renderCurrentView()
     
     // Sempre mostra informações de performance após renderizar
     this.showPerformanceInfo()
   }
 
   /**
-   * Exporta o projeto como imagem PNG
+   * Exporta o projeto como imagem PNG ou CSV dependendo da visualização
    */
   exportProject() {
-    if (this.ganttChart) {
+    if (this.currentView === 'gantt' && this.ganttChart) {
       this.ganttChart.exportAsPNG()
+    } else if (this.currentView === 'table' && this.tableView) {
+      this.tableView.exportToCSV()
     }
   }
 
@@ -378,9 +411,9 @@ export class ProjectManager {
   showProcessingWarnings(warnings) {
     if (!warnings || warnings.length === 0) return
 
-    const ganttContainer = document.getElementById('ganttContainer')
-    if (!ganttContainer || !ganttContainer.parentNode) {
-      console.warn('Container do Gantt não encontrado para mostrar warnings')
+    const viewContainer = document.getElementById('viewContainer')
+    if (!viewContainer || !viewContainer.parentNode) {
+      console.warn('Container de visualização não encontrado para mostrar warnings')
       return
     }
 
@@ -407,17 +440,17 @@ export class ProjectManager {
       </ul>
     `
 
-    // Insere antes do container do gantt
-    ganttContainer.parentNode.insertBefore(warningDiv, ganttContainer)
+    // Insere antes do container de visualização
+    viewContainer.parentNode.insertBefore(warningDiv, viewContainer)
   }
 
   /**
    * Mostra informações de performance e otimizações ativas
    */
   showPerformanceInfo() {
-    const ganttContainer = document.getElementById('ganttContainer')
-    if (!ganttContainer || !ganttContainer.parentNode) {
-      console.warn('Container do Gantt não encontrado para mostrar info de performance')
+    const viewContainer = document.getElementById('viewContainer')
+    if (!viewContainer || !viewContainer.parentNode) {
+      console.warn('Container de visualização não encontrado para mostrar info de performance')
       return
     }
     
@@ -435,7 +468,7 @@ export class ProjectManager {
       ⚙️ Configurações centralizadas: ATIVAS
     `
     
-    ganttContainer.parentNode.insertBefore(performanceDiv, ganttContainer)
+    viewContainer.parentNode.insertBefore(performanceDiv, viewContainer)
     
     // Log no console para debug
     console.log('🎯 Melhorias aplicadas:', {
@@ -444,5 +477,58 @@ export class ProjectManager {
       batching: batchEnabled,
       threshold: Config.virtualization.threshold
     })
+  }
+
+  /**
+   * Alterna para uma visualização específica
+   */
+  switchToView(viewType) {
+    if (this.currentView === viewType) return
+    
+    console.log(`🔄 Alternando para visualização: ${viewType}`)
+    this.currentView = viewType
+    
+    // Atualiza estado dos botões
+    this.updateToggleButtons()
+    
+    // Renderiza a nova visualização
+    this.renderCurrentView()
+  }
+
+  /**
+   * Renderiza a visualização atual
+   */
+  renderCurrentView() {
+    const viewContainer = document.getElementById('viewContainer')
+    if (!viewContainer) {
+      console.error('Container de visualização não encontrado')
+      return
+    }
+
+    // Limpa o container
+    viewContainer.innerHTML = ''
+    
+    if (this.currentView === 'gantt') {
+      console.log('🎨 Renderizando Gantt Chart')
+      this.ganttChart = new GanttChart(viewContainer, this.projectData)
+      this.ganttChart.render()
+    } else if (this.currentView === 'table') {
+      console.log('📊 Renderizando Table View')
+      this.tableView = new TableView(viewContainer, this.projectData)
+      this.tableView.render()
+    }
+  }
+
+  /**
+   * Atualiza o estado visual dos botões de toggle
+   */
+  updateToggleButtons() {
+    const ganttBtn = document.getElementById('ganttViewBtn')
+    const tableBtn = document.getElementById('tableViewBtn')
+    
+    if (ganttBtn && tableBtn) {
+      ganttBtn.classList.toggle('active', this.currentView === 'gantt')
+      tableBtn.classList.toggle('active', this.currentView === 'table')
+    }
   }
 }
