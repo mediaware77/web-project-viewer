@@ -3,6 +3,8 @@ import { GanttChart } from './GanttChart.js'
 import { TableView } from './TableView.js'
 import { TaskProcessor } from './TaskProcessor.js'
 import { Config } from './Config.js'
+import { ResponsiveWarning } from './ResponsiveWarning.js'
+import { MobileMenu } from './MobileMenu.js'
 
 /**
  * Classe principal que gerencia a aplicação de visualização de projetos
@@ -16,6 +18,8 @@ export class ProjectManager {
     this.taskProcessor = new TaskProcessor()
     this.projectData = null
     this.currentView = 'gantt' // 'gantt' ou 'table'
+    this.responsiveWarning = new ResponsiveWarning()
+    this.mobileMenu = new MobileMenu()
   }
 
   /**
@@ -24,6 +28,7 @@ export class ProjectManager {
   init() {
     this.render()
     this.setupEventListeners()
+    this.responsiveWarning.init()
   }
 
   /**
@@ -305,6 +310,13 @@ export class ProjectManager {
               Exportar
             </button>
           </div>
+          <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <line x1="3" y1="12" x2="21" y2="12"/>
+              <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
         </div>
         
         <div class="view-container" id="viewContainer">
@@ -330,6 +342,14 @@ export class ProjectManager {
 
     document.getElementById('tableViewBtn').addEventListener('click', () => {
       this.switchToView('table')
+    })
+
+    // Configura o menu mobile
+    this.setupMobileMenu()
+
+    // Event listener para o botão do menu mobile
+    document.getElementById('mobileMenuToggle').addEventListener('click', () => {
+      this.mobileMenu.toggle()
     })
 
     // Renderiza a visualização inicial
@@ -474,6 +494,80 @@ export class ProjectManager {
 
     // Insere antes do container de visualização
     viewContainer.parentNode.insertBefore(warningDiv, viewContainer)
+  }
+
+  /**
+   * Configura o menu mobile com as ações disponíveis
+   */
+  setupMobileMenu() {
+    // Remove o menu anterior se existir
+    this.mobileMenu.destroy()
+    
+    // Renderiza o novo menu
+    this.mobileMenu.render()
+
+    // Define as ações do menu
+    const menuActions = [
+      {
+        category: 'view',
+        html: `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="2"/>
+            <rect x="3" y="8" width="12" height="2"/>
+            <rect x="3" y="12" width="15" height="2"/>
+            <rect x="3" y="16" width="9" height="2"/>
+          </svg>
+          Visualização Gantt
+        `,
+        className: this.currentView === 'gantt' ? 'primary' : '',
+        onClick: () => this.switchToView('gantt')
+      },
+      {
+        category: 'view',
+        html: `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="9" y1="9" x2="15" y2="9"/>
+            <line x1="9" y1="15" x2="15" y2="15"/>
+            <line x1="3" y1="9" x2="21" y2="9"/>
+            <line x1="9" y1="21" x2="9" y2="3"/>
+          </svg>
+          Visualização Tabela
+        `,
+        className: this.currentView === 'table' ? 'primary' : '',
+        onClick: () => this.switchToView('table')
+      },
+      {
+        category: 'export',
+        html: `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17,8 12,3 7,8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Exportar ${this.currentView === 'table' ? 'CSV' : 'PNG'}
+        `,
+        className: 'primary',
+        onClick: () => this.exportProject()
+      },
+      {
+        category: 'other',
+        html: `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14,2 14,8 20,8"/>
+          </svg>
+          Carregar Novo Arquivo
+        `,
+        className: '',
+        onClick: () => {
+          this.render()
+          this.setupEventListeners()
+        }
+      }
+    ]
+
+    this.mobileMenu.addButtons(menuActions)
   }
 
 

@@ -12,6 +12,21 @@ export const Config = {
     marginDays: {
       before: 7,           // Dias de margem antes do projeto
       after: 14            // Dias de margem após o projeto
+    },
+    // Configurações responsivas
+    responsive: {
+      tablet: {
+        breakpoint: 1024,
+        dayWidth: 25,
+        rowHeight: 35,
+        taskListWidth: 300
+      },
+      mobile: {
+        breakpoint: 768,
+        dayWidth: 20,
+        rowHeight: 35,
+        taskListWidth: '100%'
+      }
     }
   },
 
@@ -98,5 +113,42 @@ export const Config = {
       noTasks: 'Nenhuma tarefa encontrada no arquivo',
       invalidFormat: 'Formato de arquivo não suportado'
     }
+  },
+
+  // Métodos utilitários
+  getResponsiveConfig() {
+    const width = window.innerWidth
+    
+    if (width <= this.gantt.responsive.mobile.breakpoint) {
+      return {
+        ...this.gantt,
+        ...this.gantt.responsive.mobile,
+        screenSize: 'mobile'
+      }
+    } else if (width <= this.gantt.responsive.tablet.breakpoint) {
+      return {
+        ...this.gantt,
+        ...this.gantt.responsive.tablet,
+        screenSize: 'tablet'
+      }
+    } else {
+      return {
+        ...this.gantt,
+        screenSize: 'desktop'
+      }
+    }
+  },
+
+  isMobile() {
+    return window.innerWidth <= this.gantt.responsive.mobile.breakpoint
+  },
+
+  isTablet() {
+    return window.innerWidth <= this.gantt.responsive.tablet.breakpoint && 
+           window.innerWidth > this.gantt.responsive.mobile.breakpoint
+  },
+
+  isDesktop() {
+    return window.innerWidth > this.gantt.responsive.tablet.breakpoint
   }
 }

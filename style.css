@@ -507,6 +507,157 @@ body {
   marker-end: url(#arrowhead);
 }
 
+/* Mobile Menu */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-menu-toggle:hover {
+  background: #f0f0f0;
+}
+
+.mobile-menu-toggle svg {
+  width: 20px;
+  height: 20px;
+  color: #495057;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 280px;
+  height: 100vh;
+  background: white;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+  z-index: 200;
+  transition: right 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-menu.open {
+  right: 0;
+}
+
+.mobile-menu-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e1e1e1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-menu-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #323130;
+}
+
+.mobile-menu-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  color: #605e5c;
+}
+
+.mobile-menu-close:hover {
+  background: #f0f0f0;
+}
+
+.mobile-menu-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.mobile-menu-section {
+  margin-bottom: 24px;
+}
+
+.mobile-menu-section h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #323130;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mobile-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-menu-actions .btn {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 150;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.mobile-menu-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Melhorias para Gantt em telas pequenas */
+@media (max-width: 1024px) {
+  .day-header {
+    width: 25px;
+    font-size: 10px;
+  }
+  
+  .day-cell {
+    width: 25px;
+  }
+  
+  .gantt-bar {
+    height: 20px;
+    top: 10px;
+    font-size: 10px;
+  }
+  
+  .gantt-bar.level-1 {
+    height: 24px;
+    top: 8px;
+  }
+  
+  .task-list {
+    width: 300px;
+  }
+  
+  .task-hierarchy {
+    width: 35px;
+    font-size: 11px;
+  }
+  
+  .task-name {
+    font-size: 12px;
+  }
+}
+
 /* Responsividade */
 @media (max-width: 768px) {
   .gantt-container {
@@ -515,11 +666,13 @@ body {
   
   .task-list {
     width: 100%;
-    max-height: 300px;
+    max-height: 250px;
+    overflow-y: auto;
   }
   
   .timeline-container {
     flex: 1;
+    min-height: 400px;
   }
   
   .app-header {
@@ -528,13 +681,139 @@ body {
   
   .toolbar {
     padding: 8px 16px;
-    flex-direction: column;
-    gap: 12px;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
   
   .toolbar-actions {
-    justify-content: center;
+    display: none;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .project-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .project-name {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .project-details {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Otimizações específicas para Gantt mobile */
+  .day-header {
+    width: 20px;
+    font-size: 9px;
+    padding: 2px 0;
+  }
+  
+  .day-cell {
+    width: 20px;
+  }
+  
+  .gantt-bar {
+    height: 18px;
+    top: 11px;
+    font-size: 9px;
+  }
+  
+  .gantt-bar.level-1 {
+    height: 22px;
+    top: 9px;
+  }
+  
+  .gantt-bar-content {
+    padding: 0 4px;
+  }
+  
+  .task-item {
+    height: 35px;
+    padding: 6px 8px;
+  }
+  
+  .timeline-row {
+    height: 35px;
+  }
+  
+  .task-list-header {
+    height: 50px;
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+  
+  .timeline-header {
+    height: 50px;
+  }
+  
+  .timeline-months {
+    height: 25px;
+  }
+  
+  .timeline-days {
+    height: 25px;
+  }
+  
+  .month-header {
+    font-size: 11px;
+    font-weight: 500;
+  }
+  
+  .task-hierarchy {
+    width: 30px;
+    font-size: 10px;
+  }
+  
+  .task-name {
+    font-size: 11px;
+  }
+  
+  .task-duration {
+    font-size: 10px;
+  }
+  
+  /* Melhor scroll horizontal no mobile */
+  .timeline-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .timeline-body {
+    overflow-x: visible;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-menu {
+    width: 100%;
+    right: -100%;
+  }
+  
+  .app-header {
+    padding: 8px 12px;
+  }
+  
+  .toolbar {
+    padding: 6px 12px;
+  }
+  
+  .app-title {
+    font-size: 20px;
+  }
+  
+  .app-subtitle {
+    font-size: 13px;
   }
 }
 
@@ -590,6 +869,150 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+/* Resolution Warning Modal */
+.resolution-warning-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.resolution-warning-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+}
+
+.warning-icon-large {
+  width: 64px;
+  height: 64px;
+  color: #ff9500;
+  margin: 0 auto 24px;
+}
+
+.resolution-warning-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #323130;
+  margin-bottom: 16px;
+}
+
+.resolution-warning-message {
+  font-size: 16px;
+  color: #605e5c;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.resolution-warning-details {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: #495057;
+}
+
+.resolution-warning-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn.warning-primary {
+  background: linear-gradient(135deg, #ff9500, #ffb347);
+  color: white;
+  border-color: #ff9500;
+  min-width: 140px;
+}
+
+.btn.warning-primary:hover {
+  background: linear-gradient(135deg, #e6850e, #ff9500);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.btn.warning-secondary {
+  background: #f8f9fa;
+  color: #495057;
+  border-color: #d1d1d1;
+  min-width: 140px;
+}
+
+.btn.warning-secondary:hover {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.resolution-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6c757d;
+  margin-top: 16px;
+}
+
+.resolution-info-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Desktop Mode Toggle */
+.desktop-mode-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 149, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 768px) {
+  .resolution-warning-modal {
+    padding: 24px;
+    margin: 16px;
+  }
+  
+  .resolution-warning-title {
+    font-size: 20px;
+  }
+  
+  .resolution-warning-message {
+    font-size: 14px;
+  }
+  
+  .resolution-warning-actions {
+    flex-direction: column;
+  }
+  
+  .btn.warning-primary,
+  .btn.warning-secondary {
+    min-width: 100%;
+  }
 }
 
 .error-icon {
